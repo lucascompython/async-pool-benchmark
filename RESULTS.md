@@ -11,7 +11,7 @@
 ## System details
 
 ```
-❯ lscpu |grep -e "^CPU(s):" -e "^Model name:"
+❯ lscpu | grep -e "^CPU(s):" -e "^Model name:"
 CPU(s): 4
 Model name: Intel(R) Core(TM) i5-7400T CPU @ 2.40GHz
 ```
