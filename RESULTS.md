@@ -12,19 +12,20 @@
 
 ```
 ❯ lscpu |grep -e "^CPU(s):" -e "^Model name:"
-CPU(s): 16
-Model name: Intel(R) Core(TM) i9-9900K CPU @ 3.60GHz
+CPU(s): 4
+Model name: Intel(R) Core(TM) i5-7400T CPU @ 2.40GHz
 ```
 
 ```
-❯ cat /proc/meminfo |grep MemTotal
-MemTotal: 131839000 kB
+❯ cat /proc/meminfo | grep MemTotal
+MemTotal: 7990808 kB
 ```
 
 ```
-❯ lsb_release -a |grep Description
-Description: Ubuntu 21.10
+❯ lsb_release -a | grep Description
+Description: Fedora Linux 41 (Workstation Edition)
 ```
+
 ### 8 Workers
 
 ![](figures/result_s2_w8.svg)

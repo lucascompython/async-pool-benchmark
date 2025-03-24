@@ -1,28 +1,36 @@
+use std::future::ready;
+
+use deadpool::managed::{Metrics, RecycleResult};
 use tokio::task::JoinHandle;
 
 use crate::BenchmarkConfig;
 
 struct Manager {}
 
-#[async_trait::async_trait]
-impl ::deadpool_0_8::managed::Manager for Manager {
+impl ::deadpool::managed::Manager for Manager {
     type Type = ();
     type Error = ();
-    async fn create(&self) -> Result<Self::Type, Self::Error> {
-        Ok(())
+
+    fn create(&self) -> impl Future<Output = Result<Self::Type, Self::Error>> + Send {
+        ready(Ok(()))
     }
-    async fn recycle(
+
+    fn recycle(
         &self,
         _: &mut Self::Type,
-    ) -> deadpool_0_8::managed::RecycleResult<Self::Error> {
-        Ok(())
+        _metrics: &Metrics,
+    ) -> impl Future<Output = RecycleResult<Self::Error>> + Send {
+        ready(Ok(()))
     }
 }
 
-type Pool = ::deadpool_0_8::managed::Pool<Manager>;
+type Pool = ::deadpool::managed::Pool<Manager>;
 
 pub async fn run(cfg: BenchmarkConfig) -> Vec<JoinHandle<()>> {
-    let pool = Pool::new(Manager {}, cfg.pool_size);
+    let pool = Pool::builder(Manager {})
+        .max_size(cfg.pool_size)
+        .build()
+        .unwrap();
     (0..cfg.workers)
         .map(|_| {
             let pool = pool.clone();

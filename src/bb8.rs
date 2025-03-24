@@ -1,28 +1,31 @@
+use std::future::ready;
 use tokio::task::JoinHandle;
 
 use crate::BenchmarkConfig;
 
 struct Manager {}
 
-#[async_trait::async_trait]
-impl ::bb8_0_7::ManageConnection for Manager {
+impl ::bb8::ManageConnection for Manager {
     type Connection = ();
     type Error = ();
-    async fn connect(&self) -> Result<Self::Connection, Self::Error> {
-        Ok(())
+
+    fn connect(&self) -> impl Future<Output = Result<Self::Connection, Self::Error>> + Send {
+        ready(Ok(()))
     }
-    async fn is_valid(
+
+    fn is_valid(
         &self,
-        _: &mut bb8_0_7::PooledConnection<'_, Self>,
-    ) -> Result<(), Self::Error> {
-        Ok(())
+        _conn: &mut Self::Connection,
+    ) -> impl Future<Output = Result<(), Self::Error>> + Send {
+        ready(Ok(()))
     }
-    fn has_broken(&self, _: &mut Self::Connection) -> bool {
+
+    fn has_broken(&self, _conn: &mut Self::Connection) -> bool {
         false
     }
 }
 
-type Pool = bb8_0_7::Pool<Manager>;
+type Pool = bb8::Pool<Manager>;
 
 pub async fn run(cfg: BenchmarkConfig) -> Vec<JoinHandle<()>> {
     let pool = Pool::builder()
